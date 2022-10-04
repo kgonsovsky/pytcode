@@ -1,7 +1,7 @@
-***HomeWork for PytCode***
+***Дом. работа для "PytCode". "RazbUch". Гонсовский К.Е***
 
-***RazbUch project. Gonsovsky K.E***
+## 1.1 > 1-importCSV.sql
 
-### 1.1 Run 1-importCSV.sql This will import razb_uch.csv to Postgre dynamically created table
+### Файл razb_uch.csv будет импортирован в базу Postgre
 
-#### Please, replace "razb_uch.scv" with valid path
+#### В теле файла заменить  "razb_uch.scv" на валидный пачт
