@@ -35,5 +35,5 @@ $BODY$
 ALTER FUNCTION load_csv_file(text, text, integer)
   OWNER TO postgres;
 
-drop table if exists source;
+drop table if exists source cascade ;
 SELECT load_csv_file(csv_path => 'C:/Users/Administrator/source/repos/PytCode/razb_uch.csv', target_table => 'source', col_count => 22);

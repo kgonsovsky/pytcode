@@ -1,1 +1,0 @@
-CREATE TABLE RESULT (MASTER_ID bigserial primary key,vost_pol_begin__id bigint , vost_pol_end__id bigint melk_set_begin__id bigint , melk_set_end__id bigint okato_begin_vost_uch_id bigint , okato_begin_melk_set_id bigint , okato_end_vost_uch_id bigint , okato_end_melk_set_id bigint vost_uch_begin__id bigint , vost_uch_end__id bigint );

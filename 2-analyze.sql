@@ -1,5 +1,5 @@
 /*
- Шаг 2. Скрипт проанализирует колонки и данные, создаст реалиционную модель данных, заполнит таблицы и создаст связи
+ Шаг 2. Скрипт проанализирует колонки и данные, создаст реалиционную модель данных
 */
 
 /* из имени стобца исходной таблицы возвращает имя реалиционной сущности */
@@ -121,15 +121,15 @@ DECLARE
     a text;
 BEGIN
    if (src='' and suffix='') then
-        return concat(entity,'_','id');
+        return concat(entity,'_','slave_id');
     end if;
     if (suffix='') then
-        return concat(entity,'_',src,'_','id');
+        return concat(entity,'_',src,'_','slave_id');
     end if;
     if (src='') then
-        return concat(entity,'_',suffix,'_','id');
+        return concat(entity,'_',suffix,'_','slave_id');
     end if;
-   return concat(entity,'_',suffix,'_',src,'_','id');
+   return concat(entity,'_',suffix,'_',src,'_','slave_id');
 END;
 $$ LANGUAGE plpgsql;
 
@@ -193,7 +193,7 @@ FOR entityName IN SELECT entity FROM entities
 	LOOP
         raise notice '%', entityName;
         sql := format('
-            drop table if exists %s; CREATE TABLE %s (RELATION_ID bigserial primary key,%s);'
+            drop table if exists %s cascade; CREATE TABLE %s (RELATION_ID uuid DEFAULT gen_random_uuid() primary key,%s);'
             ,entityName,entityName,fieldsDest(entityName,'  text'));
         raise notice '%', sql;
         raise notice '';
@@ -214,29 +214,27 @@ FOR entityName IN SELECT entity FROM entities
 END$$;
 
 /* создадим резуьлтирующую таблицу */
-drop table if exists result;
-
---
--- DO $$
--- DECLARE
--- entityName varchar;
--- suffixName varchar;
--- sql text;
--- BEGIN
---     sql := 'CREATE TABLE RESULT (MASTER_ID bigserial primary key';
---     FOR entityName IN SELECT entity FROM entities
--- 	LOOP
---         FOR suffixName IN SELECT suffix FROM entitySuffixes(entityName)
--- 	    LOOP
---             raise notice '%, %', entityName, suffixName;
---             raise notice '';
---             sql = concat(sql,',',
---                     (select STRING_AGG(concat(fieldId(entityName,suffixName, src), ' bigint '),', ') FROM fieldSources(entityName))
---                 );
---         END LOOP;
--- 	END LOOP;
---     sql=concat(sql,');');
---     raise notice '%', sql;
---     raise notice '';
---     EXECUTE sql;
--- END$$;
+drop table if exists result cascade;
+DO $$
+DECLARE
+entityName varchar;
+suffixName varchar;
+sql text;
+BEGIN
+    sql := 'CREATE TABLE RESULT (MASTER_ID uuid DEFAULT gen_random_uuid() primary key ';
+    FOR entityName IN SELECT entity FROM entities
+	LOOP
+        FOR suffixName IN SELECT suffix FROM entitySuffixes(entityName)
+	    LOOP
+            raise notice '%, %', entityName, suffixName;
+            raise notice '';
+            sql = concat(sql,',',
+                    (select STRING_AGG(concat(fieldId(entityName,suffixName, src), ' uuid'),', ') FROM fieldSources(entityName))
+                );
+        END LOOP;
+	END LOOP;
+    sql=concat(sql,');');
+    raise notice '%', sql;
+    raise notice '';
+    EXECUTE sql;
+END$$;
