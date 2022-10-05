@@ -1,6 +1,7 @@
 /*
  Шаг 1. Иимпорт RAZB_UCH.CSV в таблицу "SOURCE"
 */
+
 CREATE OR REPLACE FUNCTION load_csv_file(target_table text,csv_path text,col_count integer)
   RETURNS void AS
 $BODY$
